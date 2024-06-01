@@ -18,15 +18,19 @@ const RecipeForm = () => {
     instruction: ''
   });
   const { id } = useParams<{ id: string }>();
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
-      const idNumber=parseInt(id);
-      getRecipeById(idNumber).then(response => setRecipe(response))
+      const NumberId=parseInt(id);
+      if(isNaN(NumberId)){
+        navigate('/404');
+      }
+      getRecipeById(NumberId).then(response => setRecipe(response))
         .catch(error => console.error(error));
     }
+    else {}
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -38,8 +42,11 @@ const RecipeForm = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (id) {
-      const idNumber=parseInt(id);
-      updateRecipe(idNumber,recipe).then(() => navigate(`/recipes/${id}`))
+      const NumberId=parseInt(id);
+      if(isNaN(NumberId)){
+        navigate('/404');
+      }
+      updateRecipe(NumberId,recipe).then(() => navigate(`/recipes/${id}`))
         .catch(error => console.error(error));
     } else {
       createRecipe(recipe)

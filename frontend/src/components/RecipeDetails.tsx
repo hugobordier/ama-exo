@@ -24,12 +24,16 @@ const RecipeDetails = () => {
     if(id){
     const NumberId = parseInt(id);
     if(isNaN(NumberId)){
-      navigate('/');
+      navigate('/404');
     }
+    else
+    {
       getRecipeById(NumberId).then(response => setRecipe(response))
       .catch(error => console.error(error));}
+    }
+      
       else{
-        navigate('/');
+        navigate('/404');
       }
 
   }, [id]);
@@ -37,13 +41,19 @@ const RecipeDetails = () => {
   const handleDelete = () => {
     if(id){
       const NumberId = parseInt(id);
+      console.log(NumberId);
       if(isNaN(NumberId)){
-        navigate('/');
+        navigate('/404');
       }
-        deleteRecipe(NumberId).then(response => setRecipe(response))
-        .catch(error => console.error(error));}
+      else
+      {
+         deleteRecipe(NumberId).then(response => setRecipe(response))
+        .catch(error => console.error(error));
+      }
+      }
+       
         else{
-          navigate('/');
+          navigate('/404');
         }
   };
 
