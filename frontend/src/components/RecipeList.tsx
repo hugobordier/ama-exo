@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { getRecipes } from '../services/api';
 
 interface Recipe {
   id: number;
@@ -11,11 +11,7 @@ const RecipeList = () => {
   const [recipes, setRecipes] = useState<Recipe[] | null>(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/recipes')
-      .then(response => {
-        console.log(response);
-        setRecipes(response.data)})
-      .catch(error => console.error(error));
+    getRecipes().then(res => setRecipes(res));
   }, []);
 
   if (!recipes) return <div>Loading...</div>
