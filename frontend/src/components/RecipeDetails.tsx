@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { deleteRecipe, getRecipeById } from '../services/api';
+import { Loading } from './Loading';
 
 interface Recipe {
   id: number;
@@ -18,18 +20,34 @@ const RecipeDetails = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/recipes/${id}`)
-      .then(response => setRecipe(response.data))
-      .catch(error => console.error(error));
+    
+    if(id){
+    const NumberId = parseInt(id);
+    if(isNaN(NumberId)){
+      navigate('/');
+    }
+      getRecipeById(NumberId).then(response => setRecipe(response))
+      .catch(error => console.error(error));}
+      else{
+        navigate('/');
+      }
+
   }, [id]);
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:3000/recipes/${id}`)
-      .then(() => navigate('/'))
-      .catch(error => console.error(error));
+    if(id){
+      const NumberId = parseInt(id);
+      if(isNaN(NumberId)){
+        navigate('/');
+      }
+        deleteRecipe(NumberId).then(response => setRecipe(response))
+        .catch(error => console.error(error));}
+        else{
+          navigate('/');
+        }
   };
 
-  if (!recipe) return <div>Loading...</div>;
+  if (!recipe) return <Loading/>;
 
   return (
     <div>

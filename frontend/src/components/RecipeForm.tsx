@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { createRecipe, getRecipeById, updateRecipe } from '../services/api';
 
 interface Recipe {
   name: string;
@@ -9,7 +10,7 @@ interface Recipe {
   instruction: string;
 }
 
-const RecipeForm: React.FC = () => {
+const RecipeForm = () => {
   const [recipe, setRecipe] = useState<Recipe>({
     name: '',
     description: '',
@@ -17,12 +18,13 @@ const RecipeForm: React.FC = () => {
     instruction: ''
   });
   const { id } = useParams<{ id: string }>();
+  
   const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
-      axios.get(`http://localhost:3000/recipes/${id}`)
-        .then(response => setRecipe(response.data))
+      const idNumber=parseInt(id);
+      getRecipeById(idNumber).then(response => setRecipe(response))
         .catch(error => console.error(error));
     }
   }, [id]);
@@ -36,11 +38,11 @@ const RecipeForm: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (id) {
-      axios.put(`http://localhost:3000/recipes/${id}`, recipe)
-        .then(() => navigate(`/recipes/${id}`))
+      const idNumber=parseInt(id);
+      updateRecipe(idNumber,recipe).then(() => navigate(`/recipes/${id}`))
         .catch(error => console.error(error));
     } else {
-      axios.post('http://localhost:3000/recipes', recipe)
+      createRecipe(recipe)
         .then(() => navigate('/'))
         .catch(error => console.error(error));
     }
@@ -56,7 +58,7 @@ const RecipeForm: React.FC = () => {
           name="name"
           value={recipe.name}
           onChange={handleChange}
-          required
+          required //oblige de remplir
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
         />
       </div>
@@ -71,7 +73,7 @@ const RecipeForm: React.FC = () => {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium">Ingredients (comma separated)</label>
+        <label className="block text-sm font-medium">Ingredients </label>
         <textarea
           name="ingredients"
           value={recipe.ingredients}
@@ -93,6 +95,7 @@ const RecipeForm: React.FC = () => {
       <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md">
         Save
       </button>
+      <Link to={`/`} className="bg-black ml-4 px-4 py-2  text-white rounded-md">BACK</Link>
     </form>
   );
 };

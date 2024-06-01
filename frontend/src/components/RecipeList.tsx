@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecipes } from '../services/api';
+import { Loading } from './Loading';
 
 interface Recipe {
   id: number;
@@ -14,7 +15,7 @@ const RecipeList = () => {
     getRecipes().then(res => setRecipes(res));
   }, []);
 
-  if (!recipes) return <div>Loading...</div>
+  if (!recipes) return <Loading/>
 
   return (
     <div>
