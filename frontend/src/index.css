@@ -7,3 +7,8 @@
   transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}

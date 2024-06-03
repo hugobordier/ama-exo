@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 import { createRecipe, getRecipeById, updateRecipe } from '../services/api';
+import axios from 'axios';
 
 interface Recipe {
   name: string;
   description: string;
   ingredients: string;
   instruction: string;
+  imageUrl: any ;
 }
 
 const RecipeForm = () => {
@@ -15,9 +16,12 @@ const RecipeForm = () => {
     name: '',
     description: '',
     ingredients: '',
-    instruction: ''
+    instruction: '',
+    imageUrl:''
   });
+  const [file, setFile] = useState<Blob>();
   const { id } = useParams<{ id: string }>();
+
 
   const navigate = useNavigate();
 
@@ -30,7 +34,6 @@ const RecipeForm = () => {
       getRecipeById(NumberId).then(response => setRecipe(response))
         .catch(error => console.error(error));
     }
-    else {}
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -39,7 +42,7 @@ const RecipeForm = () => {
     setRecipe({ ...recipe, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (id) {
       const NumberId=parseInt(id);
@@ -49,9 +52,26 @@ const RecipeForm = () => {
       updateRecipe(NumberId,recipe).then(() => navigate(`/recipes/${id}`))
         .catch(error => console.error(error));
     } else {
-      createRecipe(recipe)
+        try {
+          const formData = new FormData();
+          if(!file){
+            throw new Error('Please select an image');
+          }
+          formData.append('file', file);//recipe.imageUrl:lz photo
+          const response = await axios.post('http://localhost:3000/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          const imageUrl = response.data.imageUrl;
+          setRecipe({ ...recipe, imageUrl: imageUrl });
+          const recipeData = { ...recipe, imageUrl: imageUrl };
+          createRecipe(recipeData)
         .then(() => navigate('/'))
         .catch(error => console.error(error));
+        } catch (error) {
+          console.error('Erreur lors de l\'upload de la photo', error);
+        }
     }
   };
 
@@ -98,6 +118,16 @@ const RecipeForm = () => {
           required
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
         />
+        
+      </div>
+      <div>
+          <label>Photo:</label>
+          <input 
+          name="imageUrl"
+          type="file" 
+          onChange={(e) => setFile( e.target.files[0])} //on pren la premierre du tableau donc la derniere ajoute
+          required
+          accept='image/*' />
       </div>
       <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md">
         Save

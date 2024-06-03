@@ -30,11 +30,11 @@ const RecipeList = () => {
       <div className="lg:w-11/12 xl:w-12/12">
         <div className="rounded-3 shadow-md bg-white">
           <div className="p-4">
-            <h4 className="text-center my-3 pb-3">RECIPES LIST</h4>
+            <h2 className="text-center text-7xl font-bold my-3 pb-3 font-roboto">RECIPES LIST</h2>
             <div className="flex flex-wrap justify-center items-center gap-3 mb-4 pb-2">
               <div className="w-full lg:w-auto">
                 <input
-                  className="form-input mt-1 block w-full"
+                  className="form-input text-center mt-1 block py-2 rounded-full w-full border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
                   placeholder="Enter a task here"
                   type="text"
                 />
@@ -88,10 +88,7 @@ const RecipeList = () => {
                     } 
 
                     }>
-                      Delete
-                    </button>
-                    <button className="bg-green-500 text-white py-2 px-4 rounded" type="submit">
-                      Finished
+                    Delete
                     </button>
                   </td>
                   </tr>

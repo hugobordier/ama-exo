@@ -10,6 +10,7 @@ interface Recipe {
   description: string;
   ingredients: string;
   instruction: string;
+  imageUrl:string;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,11 +48,11 @@ const RecipeDetails = () => {
       }
       else
       {
-         deleteRecipe(NumberId).then(response => setRecipe(response))
+        deleteRecipe(NumberId).then(response => setRecipe(response))
         .catch(error => console.error(error));
       }
       }
-       
+
         else{
           navigate('/404');
         }
@@ -62,6 +63,7 @@ const RecipeDetails = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold">{recipe.name}</h1>
+      <img src={recipe.imageUrl} alt='recette'></img>
       <p>{recipe.description}</p>
       <p>Ingredients: {recipe.ingredients}</p>
       <p>Instructions: {recipe.instruction}</p>
