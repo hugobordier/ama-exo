@@ -82,7 +82,7 @@ app.put('/recipes/:id', async (req: Request, res: Response) => { //put pourmodif
             return res.status(400).json({ error: "L'identifiant n'est pas un nombre" });
         }
 
-        const { name, description, instruction, ingredients } = req.body;
+        const { name, description, instruction, ingredients ,imageUrl} = req.body;
 
         const recipe = await Recipe.findByPk(id); //pour que recipe soit la bonne recette a modif
         if (!recipe) {
@@ -94,6 +94,7 @@ app.put('/recipes/:id', async (req: Request, res: Response) => { //put pourmodif
         recipe.description = description ?? recipe.description;
         recipe.ingredients = ingredients ?? recipe.ingredients;
         recipe.instruction = instruction ?? recipe.instruction;
+        recipe.imageUrl = imageUrl ?? recipe.imageUrl;
 
         await recipe.save();
 
