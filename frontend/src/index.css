@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 .btn-custom {
-  border-radius: 0.25rem; /* Equivalent to rounded in Tailwind */
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  border-radius: 0.25rem; 
+  transition: background-color 0.3s ease; 
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');

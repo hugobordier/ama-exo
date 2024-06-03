@@ -1,17 +1,21 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
+// Define the Recipe model
 class Recipe extends Model {
+    // Declare properties for Recipe model
     public id!: number;
     public name!: string;
     public description!: string;
     public ingredients!: string;
     public instruction!: string;
-    public imageUrl?: string; // Déclaration de la propriété photo comme un Buffer
+    public imageUrl?: string;
 }
 
+// Initialize Recipe model with Sequelize
 Recipe.init(
     {
+        // Define model attributes
         id: {
             type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
@@ -40,9 +44,10 @@ Recipe.init(
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,
     }, {
-        tableName: 'recipes',
-        sequelize,
-        timestamps: true
+        // Define model options
+        tableName: 'recipes', // Set table name
+        sequelize, // Pass the Sequelize instance
+        timestamps: true // Enable timestamps
     }
 );
 

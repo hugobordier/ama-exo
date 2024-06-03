@@ -2,30 +2,32 @@ import express from "express";
 import { Request, Response } from "express";
 import mysql from "mysql";
 import dotenv from "dotenv";
-import sequelize from "./config/database";
-import Recipe from './models/recipes';
+import sequelize from "./config/database"; // Import Sequelize instance
+import Recipe from './models/recipes'; // Import Recipe model
 import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
-import multer from 'multer';
-import upload from "./midlewares/upload";
-dotenv.config();
+import multer from 'multer'; // Import multer for file uploads
+import upload from "./midlewares/upload"; // Import middleware for handling file uploads
+dotenv.config(); // Load environment variables from .env file
 
-
-
+// Initialize Express application
 const app = express();
-app.use(express.json());// ca manipule du json et que du json
-app.use(cors()) ;
-const port = 3000;
+app.use(express.json()); // Middleware to parse JSON requests
+app.use(cors()); // Middleware to enable Cross-Origin Resource Sharing
+const port = 3000; // Define port for the server
 
-
-
+// Route to check if server is running
 app.get("/", (req, res) => {
-    res.send(`le serveur tourne sur ${port}`);
+    res.send(`Server is running on port ${port}`);
 });
 
-
-
+// Route to get all recipes
+/**
+ * Route to get all recipes from the database.
+ * @param {Request} req - Express request object.
+ * @param {Response} res - Express response object.
+ */
 app.get('/recipes', async (req: Request, res: Response) => {
     try {
         const recipes = await Recipe.findAll();
@@ -35,30 +37,41 @@ app.get('/recipes', async (req: Request, res: Response) => {
     }
 });
 
+// Route to get a specific recipe by ID
+/**
+ * Route to get a specific recipe by its ID.
+ * @param {Request} req - Express request object containing the recipe ID.
+ * @param {Response} res - Express response object.
+ */
 app.get('/recipes/:id', async (req: Request, res: Response) => {
     try {
-        const id = parseInt(req.params.id);//params c pour les truc sprecifier donc avec:
-        if(isNaN(id)){
-            return res.status(400).json({erreur:"l'identifiant n'est pas un nombre"})
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ error: "Invalid ID provided" });
         }
-        const recipes = await Recipe.findByPk(id);
-        if (!recipes)
-            {
-                return res.status(404).json({ message: "Recipe not found" });
-            }
-        res.json(recipes);
+        const recipe = await Recipe.findByPk(id);
+        if (!recipe) {
+            return res.status(404).json({ message: "Recipe not found" });
+        }
+        res.json(recipe);
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.post('/recipes', async (req: Request, res: Response) => { // post pour cree
+// Route to create a new recipe
+/**
+ * Route to create a new recipe in the database.
+ * @param {Request} req - Express request object containing recipe data.
+ * @param {Response} res - Express response object.
+ */
+app.post('/recipes', async (req: Request, res: Response) => {
     try {
-        console.log("body", req.body);
-        const { name, description, instruction,ingredients,imageUrl } = req.body; //req.body c le json envoye donc avec les name et tt et la il le met sous la forme demande en json
+        const { name, description, instruction, ingredients, imageUrl } = req.body;
 
+        // Validation checks for required fields
         if (!name || !ingredients || !instruction || !description) {
-            return res.status(400).json({ error: 'Veuillez fournir un titre, des ingrédients et des instructions pour la recette.' });
+            return res.status(400).json({ error: 'Please provide a name, ingredients, instruction, and description for the recipe.' });
         }
 
         const newRecipe = await Recipe.create({
@@ -75,22 +88,28 @@ app.post('/recipes', async (req: Request, res: Response) => { // post pour cree
     }
 });
 
-app.put('/recipes/:id', async (req: Request, res: Response) => { //put pourmodif
+// Route to update an existing recipe
+/**
+ * Route to update an existing recipe in the database.
+ * @param {Request} req - Express request object containing updated recipe data.
+ * @param {Response} res - Express response object.
+ */
+app.put('/recipes/:id', async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
         if (isNaN(id)) {
-            return res.status(400).json({ error: "L'identifiant n'est pas un nombre" });
+            return res.status(400).json({ error: "Invalid ID provided" });
         }
 
-        const { name, description, instruction, ingredients ,imageUrl} = req.body;
+        const { name, description, instruction, ingredients, imageUrl } = req.body;
 
-        const recipe = await Recipe.findByPk(id); //pour que recipe soit la bonne recette a modif
+        const recipe = await Recipe.findByPk(id);
         if (!recipe) {
-            return res.status(404).json({ message: "Recette non trouvée" });
+            return res.status(404).json({ message: "Recipe not found" });
         }
 
-        // Mise à jour de la recette
-        recipe.name = name ?? recipe.name;  //si varname n'est pas vide on met varname sinon on met le name de la recette
+        // Update recipe fields
+        recipe.name = name ?? recipe.name;
         recipe.description = description ?? recipe.description;
         recipe.ingredients = ingredients ?? recipe.ingredients;
         recipe.instruction = instruction ?? recipe.instruction;
@@ -104,11 +123,16 @@ app.put('/recipes/:id', async (req: Request, res: Response) => { //put pourmodif
     }
 });
 
-
+// Route to delete a recipe by ID
+/**
+ * Route to delete a recipe from the database by its ID.
+ * @param {Request} req - Express request object containing the recipe ID.
+ * @param {Response} res - Express response object.
+ */
 app.delete('/recipes/:id', async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
-        const recipe = await Recipe.findByPk(id); // ca renvoie une promesse aussi
+        const recipe = await Recipe.findByPk(id);
 
         if (recipe) {
             await recipe.destroy();
@@ -122,29 +146,35 @@ app.delete('/recipes/:id', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/upload', upload.single('file'), async (req, res) => {// midleware :upload.single('imageUrl')
+// Route to handle file uploads
+/**
+ * Route to handle file uploads.
+ * @param {Request} req - Express request object containing the uploaded file.
+ * @param {Response} res - Express response object.
+ */
+app.post('/upload', upload.single('file'), async (req, res) => {
     try {
-        console.log("popo")
         if (!req.file) {
             return res.status(400).send({ message: 'No file uploaded' });
         }
-    const { path } = req.file;
-    const imageUrl = `http://localhost:3000/${path}`;
-    res.json({ imageUrl});
+        const { path } = req.file;
+        const imageUrl = `http://localhost:3000/${path}`;
+        res.json({ imageUrl });
     } catch (error) {
-        console.log('test',error);
-        res.status(500).json({ error: 'Erreur lors de l\'upload de la photo' });
+        console.log('Error uploading photo:', error);
+        res.status(500).json({ error: 'Error uploading photo' });
     }
 });
 
-app.use('/uploads',express.static('uploads'));
+// Serve uploaded files statically
+app.use('/uploads', express.static('uploads'));
 
-sequelize.sync().then(() => { //sequelize.sync() return une promesse d'ou le then
-    console.log('Base de données synchronisée');
+// Sync Sequelize models with database and start server
+sequelize.sync().then(() => {
+    console.log('Database synchronized');
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
     });
-    }).catch((err) => {
-    console.error('Erreur de synchronisation de la base de données:', err);
-    });
-
+}).catch((err) => {
+    console.error('Error syncing database:', err);
+});
