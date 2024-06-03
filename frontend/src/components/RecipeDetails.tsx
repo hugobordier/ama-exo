@@ -61,18 +61,28 @@ const RecipeDetails = () => {
   if (!recipe) return <Loading/>;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">{recipe.name}</h1>
-      <img src={recipe.imageUrl} alt='recette'></img>
-      <p>{recipe.description}</p>
-      <p>Ingredients: {recipe.ingredients}</p>
-      <p>Instructions: {recipe.instruction}</p>
-      <p>Created At: {new Date(recipe.createdAt).toLocaleString()}</p>
-      <p>Updated at: {new Date(recipe.updatedAt).toLocaleString()}</p>
-      <Link to={`/recipes/${id}/edit`} className="text-blue-500">Edit</Link>
-      <button onClick={handleDelete} className="ml-4 px-4 py-2 bg-red-500 text-white rounded-md">Delete</button>
-      <Link to={`/`} className="bg-black ml-4 px-4 py-2  text-white rounded-md">BACK</Link>
+    <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg rounded-lg">
+    <h1 className="text-3xl font-bold flex justify-center mb-4">{recipe.name}</h1>
+    <img src={recipe.imageUrl} alt='recette' className='h-64 w-full object-cover rounded-md mb-4'></img>
+    <p className="text-lg mb-4">{recipe.description}</p>
+    <div className="mb-4">
+        <h2 className="text-xl font-semibold">Ingredients:</h2>
+        <p>{recipe.ingredients}</p>
     </div>
+    <div className="mb-4">
+        <h2 className="text-xl font-semibold">Instructions:</h2>
+        <p>{recipe.instruction}</p>
+    </div>
+    <div className="mb-4">
+        <p className="text-gray-600">Created At: {new Date(recipe.createdAt).toLocaleString()}</p>
+        <p className="text-gray-600">Updated At: {new Date(recipe.updatedAt).toLocaleString()}</p>
+    </div>
+    <div className="flex space-x-4">
+        <Link to={`/recipes/${id}/edit`} className="text-white bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded-md">Edit</Link>
+        <button onClick={handleDelete} className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md">Delete</button>
+        <Link to={`/`} className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-md">BACK</Link>
+    </div>
+</div>
   );
 };
 

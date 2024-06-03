@@ -49,7 +49,20 @@ const RecipeForm = () => {
       if(isNaN(NumberId)){
         navigate('/404');
       }
-      updateRecipe(NumberId,recipe).then(() => navigate(`/recipes/${id}`))
+      const formData = new FormData();
+          if(!file){
+            throw new Error('Please select an image');
+          }
+          formData.append('file', file);//recipe.imageUrl:lz photo
+          const response = await axios.post('http://localhost:3000/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          const imageUrl = response.data.imageUrl;
+          setRecipe({ ...recipe, imageUrl: imageUrl });
+          const recipeData = { ...recipe, imageUrl: imageUrl };
+      updateRecipe(NumberId,recipeData).then(() => navigate(`/recipes/${id}`))
         .catch(error => console.error(error));
     } else {
         try {
@@ -76,64 +89,69 @@ const RecipeForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h1 className="text-2xl font-bold">{id ? 'Edit Recipe' : 'Add Recipe'}</h1>
-      <div>
-        <label className="block text-sm font-medium">Name</label>
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto bg-white p-8 shadow-lg rounded-lg">
+    <h1 className="text-3xl font-bold mb-6">{id ? 'Edit Recipe' : 'Add Recipe'}</h1>
+    <div>
+        <label className="block text-sm font-medium mb-2">Name</label>
         <input
-          type="text"
-          name="name"
-          value={recipe.name}
-          onChange={handleChange}
-          required //oblige de remplir
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+            type="text"
+            name="name"
+            value={recipe.name}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
         />
-      </div>
-      <div>
-        <label className="block text-sm font-medium">Description</label>
+    </div>
+    <div>
+        <label className="block text-sm font-medium mb-2">Description</label>
         <textarea
-          name="description"
-          value={recipe.description}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+            name="description"
+            value={recipe.description}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
         />
-      </div>
-      <div>
-        <label className="block text-sm font-medium">Ingredients </label>
+    </div>
+    <div>
+        <label className="block text-sm font-medium mb-2">Ingredients</label>
         <textarea
-          name="ingredients"
-          value={recipe.ingredients}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+            name="ingredients"
+            value={recipe.ingredients}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
         />
-      </div>
-      <div>
-        <label className="block text-sm font-medium">Instructions</label>
+    </div>
+    <div>
+        <label className="block text-sm font-medium mb-2">Instructions</label>
         <textarea
-          name="instruction"
-          value={recipe.instruction}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+            name="instruction"
+            value={recipe.instruction}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
         />
-        
-      </div>
-      <div>
-          <label>Photo:</label>
-          <input 
-          name="imageUrl"
-          type="file" 
-          onChange={(e) => setFile( e.target.files[0])} //on pren la premierre du tableau donc la derniere ajoute
-          required
-          accept='image/*' />
-      </div>
-      <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md">
-        Save
-      </button>
-      <Link to={`/`} className="bg-black ml-4 px-4 py-2  text-white rounded-md">BACK</Link>
-    </form>
+    </div>
+    <div>
+        <label className="block text-sm font-medium mb-2">Photo</label>
+        <input
+            name="imageUrl"
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            required
+            accept="image/*"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+        />
+    </div>
+    <div className="flex justify-between items-center">
+        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+            Save
+        </button>
+        <Link to={`/`} className="bg-black px-4 py-2 text-white rounded-md hover:bg-gray-900">
+            BACK
+        </Link>
+    </div>
+</form>
   );
 };
 

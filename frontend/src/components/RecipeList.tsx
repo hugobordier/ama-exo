@@ -9,6 +9,7 @@ interface Recipe {
   id: number;
   name: string;
   description: string;
+  imageUrl: string;
 }
 
 const RecipeList = () => {
@@ -19,6 +20,8 @@ const RecipeList = () => {
   }, []);
 
   const navigate = useNavigate();
+
+  
 
 
   if (!recipes) return <Loading/>
@@ -72,15 +75,15 @@ const RecipeList = () => {
                   
                 <tr key={recipe.id} className='btn-custom hover:cursor-pointer hover:bg-gray-200' onClick={() => navigate(`/recipes/${recipe.id}`)}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Link to={`/recipes/${recipe.id}`} className="font-bold hover:underline">{recipe.name}</Link>
+                    <img src={recipe.imageUrl} alt='recette' className=" h-28"></img>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className='flex flex-col'>
                       <Link to={`/recipes/${recipe.id}`} className=" font-bold hover:underline">{recipe.name}</Link>
-                      <Link to={`/recipes/${recipe.id}`} className="hover:underline">{recipe.description}</Link>
+                      <Link to={`/recipes/${recipe.id}`} className="hover:underline whitespace-pre-line">{recipe.description}</Link>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap flex rounded">
+                  <td className="px-6 justify-center py-4  whitespace-nowrap flex rounded">
                     <button className="bg-red-500 text-white py-2 px-4 rounded mr-1" type="submit" onClick={async () =>
                     {
                       await deleteRecipe(recipe.id);
